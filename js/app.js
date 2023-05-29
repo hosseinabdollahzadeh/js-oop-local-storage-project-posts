@@ -63,6 +63,55 @@ class UI {
     }
 }
 
+// Local storage class
+class Store {
+    static getPosts() {
+        let posts;
+        if (localStorage.getItem('posts') === null) {
+            posts = [];
+        } else {
+            posts = JSON.parse(localStorage.getItem('posts'));
+        }
+
+        return posts;
+    }
+
+    static displayPosts() {
+        const posts = Store.getPosts();
+
+        posts.forEach(function (post) {
+            const ui = new UI();
+
+            // Add post to UI
+            ui.addPostToList(post);
+        });
+    }
+
+    static addPost(post) {
+        const posts = Store.getPosts();
+
+        posts.push(post);
+
+        localStorage.setItem('posts', JSON.stringify(posts));
+    }
+
+    static removePost(title) {
+        const posts = Store.getPosts();
+
+        posts.forEach(function (post, index) {
+            if (post.title === title) {
+                posts.splice(index, 1);
+            }
+        })
+
+        localStorage.setItem('posts', JSON.stringify(posts));
+    }
+
+}
+
+// DOM load event
+document.addEventListener('DOMContentLoaded', Store.displayPosts);
+
 // Event listener for add post
 document.getElementById('post-form').addEventListener('submit', function (e) {
 
@@ -85,6 +134,10 @@ document.getElementById('post-form').addEventListener('submit', function (e) {
         // Add post to list
         ui.addPostToList(post);
 
+        // Add to local storage
+        Store.addPost(post);
+
+        // Show success
         ui.showAlert('پست اضافه شد', 'success');
 
         // Clear fields
@@ -104,6 +157,11 @@ document.getElementById('post-list').addEventListener('click', function (e) {
 
         // Delete post
         ui.deletePost(e.target);
+
+        // Remove from local storage
+        const tr = e.target.parentElement.parentElement;
+        const title = tr.firstElementChild.textContent;
+        Store.removePost(title);
 
         // Show message
         ui.showAlert('پست حذف شد', 'success');
