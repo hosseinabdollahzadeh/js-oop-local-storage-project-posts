@@ -57,6 +57,10 @@ class UI {
         document.getElementById('author').value = '';
         document.getElementById('body').value = '';
     }
+
+    deletePost(target) {
+        target.parentElement.parentElement.remove();
+    }
 }
 
 // Event listener for add post
@@ -87,5 +91,22 @@ document.getElementById('post-form').addEventListener('submit', function (e) {
         ui.clearFields();
     }
 
+    e.preventDefault();
+});
+
+// Event listener for delete
+document.getElementById('post-list').addEventListener('click', function (e) {
+
+    // Instantiate UI
+    const ui = new UI();
+
+    if (e.target.classList.contains('delete')) {
+
+        // Delete post
+        ui.deletePost(e.target);
+
+        // Show message
+        ui.showAlert('پست حذف شد', 'success');
+    }
     e.preventDefault();
 });
